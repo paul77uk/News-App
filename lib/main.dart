@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:news_app/user_response.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -34,14 +34,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   void initState() {
     myAmazingAsyncMethod();
@@ -52,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String? imageUrl;
   List<Articles>? articleList;
   String getUsersUrl =
-      "https://gnews.io/api/v4/top-headlines?country=us&token=d9e3edc863e36b5d03fc5b2f77756d00";
+      "https://gnews.io/api/v4/top-headlines?country=gb&token=d9e3edc863e36b5d03fc5b2f77756d00";
 
   Future myAmazingAsyncMethod() async {
     http.Response response = await http.get(Uri.parse(getUsersUrl));
@@ -86,6 +78,16 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: SvgPicture.network(
+              "https://newsapi.org/images/flags/gb.svg",
+              height: 35,
+              width: 35,
+            ),
+          )
+        ],
         elevation: 2,
         shadowColor: Colors.white70,
         centerTitle: true,
@@ -95,79 +97,85 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               widget.title,
               style: TextStyle(
-                  fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white70),
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white70),
             ),
           ],
         ),
         toolbarHeight: 85,
       ),
-      body:  articleList != null
-          ? ListView.builder(
-                  itemCount: articleList?.length,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                      onTap: (){
-                        launchUrl(Uri.parse(articleList![index].url!));
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                           if (index == 0)  Padding(
-                              padding: const EdgeInsets.only(bottom: 16.0),
-                              child: Text(
-                                "TOP STORIES",
-                                style: TextStyle(
-                                    color: Colors.white54,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Stack(
+      body: articleList != null
+          ? Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+                children: [
+                  CupertinoSearchTextField(
+                    style: TextStyle(fontSize: 20),
+                    itemSize: 20,
+                    itemColor: Colors.white30,
+                    padding: EdgeInsetsDirectional.fromSTEB(16, 16, 16, 16),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: articleList?.length,
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () {
+                              launchUrl(Uri.parse(articleList![index].url!));
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  height: 230,
-                                  color: Colors.black,
+                                if (index == 0)
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 16.0),
+                                    child: Text(
+                                      "TOP STORIES",
+                                      style: TextStyle(
+                                          color: Colors.white54,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                if (articleList?[index].image != null)
+                                  Image.network(articleList![index].image!),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(
+                                    articleList![index].title!,
+                                    style: TextStyle(
+                                        color: Colors.white70,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 24),
+                                  ),
                                 ),
-                                FadeInImage.memoryNetwork(
-                                    placeholder: kTransparentImage,
-                                    image: articleList![index].image!),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(
+                                    articleList![index].publishedAt!,
+                                    style: TextStyle(
+                                        color: Colors.white38,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16),
+                                  ),
+                                ),
+                                Divider(
+                                  thickness: 0.5,
+                                  color: Colors.white70,
+                                ),
                               ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Text(
-                                articleList![index].title!,
-                                style: TextStyle(
-                                    color: Colors.white70,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 24),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Text(
-                                articleList![index].publishedAt!,
-                                style: TextStyle(
-                                    color: Colors.white38,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
-                              ),
-                            ),
-                            Divider(
-                              thickness: 0.5,
-                              color: Colors.white70,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }) : Center(child: CircularProgressIndicator()),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+                          );
+                        }),
+                  ),
+                ],
+              ),
+          )
+          : Center(child: CircularProgressIndicator()),
     );
   }
 }
