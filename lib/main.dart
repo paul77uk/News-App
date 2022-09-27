@@ -37,7 +37,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     myAmazingAsyncMethod();
+    textController = TextEditingController(text: '');
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
   }
 
   String firstName = "Still Loading......";
@@ -45,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Articles>? articleList;
   String getUsersUrl =
       "https://gnews.io/api/v4/top-headlines?country=gb&token=d9e3edc863e36b5d03fc5b2f77756d00";
+  late TextEditingController textController;
 
   Future myAmazingAsyncMethod() async {
     http.Response response = await http.get(Uri.parse(getUsersUrl));
@@ -111,7 +119,12 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
                 children: [
                   CupertinoSearchTextField(
-                    style: TextStyle(fontSize: 20),
+                    controller: textController,
+                    onChanged: (value) {
+                      getUsersUrl = "https://gnews.io/api/v4/search?q=$value&country=gb&token=d9e3edc863e36b5d03fc5b2f77756d00";
+                      myAmazingAsyncMethod();
+                    },
+                    style: TextStyle(fontSize: 20, color: Colors.white70),
                     itemSize: 20,
                     itemColor: Colors.white30,
                     padding: EdgeInsetsDirectional.fromSTEB(16, 16, 16, 16),
