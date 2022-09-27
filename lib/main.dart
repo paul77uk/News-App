@@ -7,6 +7,63 @@ import 'package:http/http.dart' as http;
 import 'package:news_app/user_response.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+const List<String> list = <String>[
+  'ar',
+  'au',
+  'at',
+  'be',
+  'br',
+  'bg',
+  'ca',
+  'cn',
+  'co',
+  'cu',
+  'cz',
+  'eg',
+  'fr',
+  'de',
+  'gr',
+  'hk',
+  'hu',
+  'in',
+  'id',
+  'ie',
+  'il',
+  'it',
+  'jp',
+  'lv',
+  'lt',
+  'my',
+  'mx',
+  'ma',
+  'nl',
+  'nz',
+  'ng',
+  'no',
+  'ph',
+  'pl',
+  'pt',
+  'ro',
+  'ru',
+  'sa',
+  'rs',
+  'sg',
+  'sk',
+  'si',
+  'za',
+  'kr',
+  'se',
+  'ch',
+  'tw',
+  'th',
+  'tr',
+  'ae',
+  'ua',
+  'gb',
+  'us',
+  've',
+];
+
 void main() {
   runApp(const MyApp());
 }
@@ -50,11 +107,15 @@ class _MyHomePageState extends State<MyHomePage> {
   String firstName = "Still Loading......";
   String? imageUrl;
   List<Articles>? articleList;
+  String country = "us";
   String getUsersUrl =
-      "https://gnews.io/api/v4/top-headlines?country=gb&token=d9e3edc863e36b5d03fc5b2f77756d00";
+      "https://gnews.io/api/v4/top-headlines?country=us&token=6f7b64d2d3e976d1346acfa5f4a19c2e";
   late TextEditingController textController;
+  String endPoint = "top-headlines?";
 
   Future myAmazingAsyncMethod() async {
+    getUsersUrl =
+        "https://gnews.io/api/v4/$endPoint&country=$country&token=6f7b64d2d3e976d1346acfa5f4a19c2e";
     http.Response response = await http.get(Uri.parse(getUsersUrl));
 
     if (response.statusCode == 200) {
@@ -88,13 +149,31 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: SvgPicture.network(
-              "https://newsapi.org/images/flags/gb.svg",
-              height: 35,
-              width: 35,
+            padding: const EdgeInsets.only(right: 8.0),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                iconSize: 0,
+                value: country,
+                onChanged: (String? value) {
+                  // This is called when the user selects an item.
+                  setState(() {
+                    country = value!;
+                    myAmazingAsyncMethod();
+                  });
+                },
+                items: list.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: SvgPicture.network(
+                      "https://newsapi.org/images/flags/$value.svg",
+                      height: 35,
+                      width: 35,
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
-          )
+          ),
         ],
         elevation: 2,
         shadowColor: Colors.white70,
@@ -115,13 +194,15 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: articleList != null
           ? Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 children: [
                   CupertinoSearchTextField(
                     controller: textController,
                     onChanged: (value) {
-                      getUsersUrl = "https://gnews.io/api/v4/search?q=$value&country=gb&token=d9e3edc863e36b5d03fc5b2f77756d00";
+                      endPoint = "search?q=$value";
+                      getUsersUrl =
+                          "https://gnews.io/api/v4/$endPoint&country=$country&token=6f7b64d2d3e976d1346acfa5f4a19c2e";
                       myAmazingAsyncMethod();
                     },
                     style: TextStyle(fontSize: 20, color: Colors.white70),
@@ -142,8 +223,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               children: [
                                 if (index == 0)
                                   Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 16.0),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16.0),
                                     child: Text(
                                       "TOP STORIES",
                                       style: TextStyle(
@@ -187,7 +268,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
-          )
+            )
           : Center(child: CircularProgressIndicator()),
     );
   }
