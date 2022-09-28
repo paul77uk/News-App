@@ -8,7 +8,6 @@ import 'package:news_app/user_response.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const List<String> list = <String>[
-  'ar',
   'au',
   'at',
   'be',
@@ -107,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // String firstName = "Still Loading......";
   // String? imageUrl;
   List<Articles>? articleList;
-  String country = "us";
+  String country = "gb";
   String getUsersUrl =
       "https://gnews.io/api/v4/top-headlines?country=gb&token=6f7b64d2d3e976d1346acfa5f4a19c2e";
   late TextEditingController textController;
@@ -150,6 +149,16 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.refresh),
+          color: Colors.white70,
+          iconSize: 35,
+          onPressed: () {
+            setState(() {
+              getRequestMethod();
+            });
+          },
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
