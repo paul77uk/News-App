@@ -108,14 +108,14 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Articles>? articleList;
   String country = "gb";
   String getUsersUrl =
-      "https://gnews.io/api/v4/top-headlines?country=gb&token=6f7b64d2d3e976d1346acfa5f4a19c2e";
+      "https://gnews.io/api/v4/top-headlines?country=gb&token=d9e3edc863e36b5d03fc5b2f77756d00";
   late TextEditingController textController;
   String endPoint = "top-headlines?";
   bool showButton = false;
 
   Future getRequestMethod() async {
     getUsersUrl =
-        "https://gnews.io/api/v4/$endPoint&country=$country&token=6f7b64d2d3e976d1346acfa5f4a19c2e";
+        "https://gnews.io/api/v4/$endPoint&country=$country&token=d9e3edc863e36b5d03fc5b2f77756d00";
     http.Response response = await http.get(Uri.parse(getUsersUrl));
 
     if (response.statusCode == 200) {
@@ -214,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onChanged: (value) {
                       endPoint = "search?q=$value";
                       getUsersUrl =
-                          "https://gnews.io/api/v4/$endPoint&country=$country&token=6f7b64d2d3e976d1346acfa5f4a19c2e";
+                          "https://gnews.io/api/v4/$endPoint&country=$country&token=d9e3edc863e36b5d03fc5b2f77756d00";
                       getRequestMethod();
                     },
                     style: TextStyle(fontSize: 20, color: Colors.white70),
