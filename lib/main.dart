@@ -93,7 +93,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
-    myAmazingAsyncMethod();
+    getRequestMethod();
     textController = TextEditingController(text: '');
     super.initState();
   }
@@ -104,16 +104,17 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  String firstName = "Still Loading......";
-  String? imageUrl;
+  // String firstName = "Still Loading......";
+  // String? imageUrl;
   List<Articles>? articleList;
   String country = "us";
   String getUsersUrl =
-      "https://gnews.io/api/v4/top-headlines?country=us&token=6f7b64d2d3e976d1346acfa5f4a19c2e";
+      "https://gnews.io/api/v4/top-headlines?country=gb&token=6f7b64d2d3e976d1346acfa5f4a19c2e";
   late TextEditingController textController;
   String endPoint = "top-headlines?";
+  bool showButton = false;
 
-  Future myAmazingAsyncMethod() async {
+  Future getRequestMethod() async {
     getUsersUrl =
         "https://gnews.io/api/v4/$endPoint&country=$country&token=6f7b64d2d3e976d1346acfa5f4a19c2e";
     http.Response response = await http.get(Uri.parse(getUsersUrl));
@@ -121,17 +122,19 @@ class _MyHomePageState extends State<MyHomePage> {
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
       NewsResponse userResponse = NewsResponse.fromJson(jsonData);
+      showButton = false;
 
       // int? page = userResponse.page;
       List<Articles>? articles = userResponse.articles;
 
       setState(() {
         articleList = articles;
-        firstName = articles![0].title!;
-        imageUrl = articles[0].image!;
+        // firstName = articles![0].title!;
+        // imageUrl = articles[0].image!;
       });
     } else {
       print("OMG INTERNET IS BROKEN");
+      showButton = true;
     }
     // return response;
     // HTTP STATUS CODES ->
@@ -158,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // This is called when the user selects an item.
                   setState(() {
                     country = value!;
-                    myAmazingAsyncMethod();
+                    getRequestMethod();
                   });
                 },
                 items: list.map<DropdownMenuItem<String>>((String value) {
@@ -203,7 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       endPoint = "search?q=$value";
                       getUsersUrl =
                           "https://gnews.io/api/v4/$endPoint&country=$country&token=6f7b64d2d3e976d1346acfa5f4a19c2e";
-                      myAmazingAsyncMethod();
+                      getRequestMethod();
                     },
                     style: TextStyle(fontSize: 20, color: Colors.white70),
                     itemSize: 20,
