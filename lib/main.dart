@@ -104,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // String firstName = "Still Loading......";
-  // String? imageUrl;
+  // String? imageUrl = "https://newsapi.org/images/flags/gb.svg";
   List<Articles>? articleList;
   String country = "gb";
   String getUsersUrl =
@@ -114,6 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool showButton = false;
 
   Future getRequestMethod() async {
+
     getUsersUrl =
         "https://gnews.io/api/v4/$endPoint&country=$country&token=d9e3edc863e36b5d03fc5b2f77756d00";
     http.Response response = await http.get(Uri.parse(getUsersUrl));
@@ -129,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         articleList = articles;
         // firstName = articles![0].title!;
-        // imageUrl = articles[0].image!;
+        // imageUrl ="https://newsapi.org/images/flags/$country.svg";
       });
     } else {
       print("OMG INTERNET IS BROKEN");
@@ -155,6 +156,9 @@ class _MyHomePageState extends State<MyHomePage> {
           iconSize: 35,
           onPressed: () {
             setState(() {
+              endPoint = "top-headlines?";
+              getUsersUrl =
+              "https://gnews.io/api/v4/$endPoint&country=$country&token=d9e3edc863e36b5d03fc5b2f77756d00";
               getRequestMethod();
             });
           },
@@ -211,11 +215,26 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   CupertinoSearchTextField(
                     controller: textController,
-                    onChanged: (value) {
+                    onSubmitted: (value) {
                       endPoint = "search?q=$value";
                       getUsersUrl =
-                          "https://gnews.io/api/v4/$endPoint&country=$country&token=d9e3edc863e36b5d03fc5b2f77756d00";
+                      "https://gnews.io/api/v4/$endPoint&country=$country&token=d9e3edc863e36b5d03fc5b2f77756d00";
                       getRequestMethod();
+                      value = "";
+                      textController.text = "";
+                    },
+                    onChanged: (value) {
+                      if (endPoint != "") {
+                        endPoint = "search?q=$value";
+                        getUsersUrl =
+                            "https://gnews.io/api/v4/$endPoint&country=$country&token=d9e3edc863e36b5d03fc5b2f77756d00";
+                        getRequestMethod();
+                      } else {
+                        endPoint = "top-headlines?";
+                        getUsersUrl =
+                        "https://gnews.io/api/v4/$endPoint&country=$country&token=d9e3edc863e36b5d03fc5b2f77756d00";
+                        getRequestMethod();
+                      }
                     },
                     style: TextStyle(fontSize: 20, color: Colors.white70),
                     itemSize: 20,
